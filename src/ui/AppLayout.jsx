@@ -11,7 +11,7 @@ import NavButton from './NavButton';
 function AppLayout() {
     return (
         <>
-            <aside className="container flex h-lvh w-[15%] flex-col">
+            <aside className="container flex h-full w-[15%] flex-col">
                 <header className="my-5 flex flex-col items-center gap-1 text-center text-4xl">
                     <Logo className="" />
                     Board Games Vault
