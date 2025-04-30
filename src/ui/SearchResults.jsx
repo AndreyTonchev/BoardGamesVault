@@ -1,12 +1,19 @@
 import { useLoaderData } from 'react-router';
 import { getGameDataFromId, getGameIdsFromQuery } from '../utils/helpers';
+import GameCard from './GameCard';
 
 function SearchResults() {
     const games = useLoaderData();
 
     console.log(games);
 
-    return <div className="text-green-400">Hello</div>;
+    return (
+        <ul className="space-y-10">
+            {games.map((gameData) => (
+                <GameCard gameData={gameData} />
+            ))}
+        </ul>
+    );
 }
 
 export async function loader({ params }) {

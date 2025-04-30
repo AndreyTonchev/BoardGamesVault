@@ -11,7 +11,7 @@ import NavButton from './NavButton';
 function AppLayout() {
     return (
         <>
-            <aside className="container flex h-full w-[15%] flex-col">
+            <aside className="container flex h-auto w-[15%] flex-col">
                 <header className="my-5 flex flex-col items-center gap-1 text-center text-4xl">
                     <Logo className="" />
                     Board Games Vault
@@ -29,7 +29,7 @@ function AppLayout() {
                 </div>
             </aside>
 
-            <section className="w-full">
+            <section className="flex flex-1 flex-col">
                 <header className="flex justify-center">
                     <form className="container flex w-[50%] items-center gap-2">
                         <input className="w-full outline-none" type="text" />
@@ -39,8 +39,8 @@ function AppLayout() {
                     </form>
                 </header>
 
-                <main>
-                    <Outlet></Outlet>
+                <main className="m-5 flex-1 overflow-y-auto rounded-2xl">
+                    <Outlet />
                 </main>
             </section>
         </>
