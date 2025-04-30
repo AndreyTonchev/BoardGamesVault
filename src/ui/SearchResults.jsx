@@ -1,26 +1,27 @@
 import { useLoaderData } from 'react-router';
-import { getSearchResults } from '../utils/helpers';
+import { getGameDataFromId, getGameIdsFromQuery } from '../utils/helpers';
 
 function SearchResults() {
-    const searchResult = useLoaderData();
-    console.log(searchResult);
-    const items = searchResult.querySelectorAll('item');
-    const result = Array.from(items).map((item) => {
-        return {
-            id: item.getAttribute('id'),
-        };
-    });
+    const games = useLoaderData();
 
-    console.log(result);
+    console.log(games);
 
     return <div className="text-green-400">Hello</div>;
 }
 
 export async function loader({ params }) {
-    console.log('Hello');
-    console.log(params);
-    const searchResult = await getSearchResults(params);
-    return searchResult;
+    const searchResult = await getGameIdsFromQuery(params.query);
+
+    try {
+        const gamePromises = searchResult.map((id) => getGameDataFromId(id));
+
+        const games = await Promise.all(gamePromises);
+
+        return games;
+    } catch (error) {
+        console.error('Error fetching games: ', error);
+        return [];
+    }
 }
 
 export default SearchResults;
