@@ -2,6 +2,6 @@
 
 @layer components {
     .container {
-        @apply m-5 box-border rounded-2xl border border-transparent bg-neutral-800 px-3 py-2 text-gray-200 shadow-2xs;
+        @apply m-5 box-border rounded-2xl bg-neutral-800 px-3 py-2 text-gray-200 shadow-2xs;
     }
 }

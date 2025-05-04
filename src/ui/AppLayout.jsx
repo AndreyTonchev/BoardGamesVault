@@ -6,6 +6,8 @@ import {
     FaDice,
     FaDiceD20 as Logo,
 } from 'react-icons/fa';
+
+import Dropdown from './DropDown';
 import NavButton from './NavButton';
 
 function AppLayout() {
@@ -31,6 +33,15 @@ function AppLayout() {
 
             <section className="flex flex-1 flex-col">
                 <header className="flex justify-center">
+                    <Dropdown
+                        options={['Name', 'Year', 'Rating']}
+                        hasSortDirection={true}
+                        type="Sort"
+                    />
+                    <Dropdown
+                        options={['Name', 'Year', 'Rating']}
+                        type="Type"
+                    />
                     <form className="container flex w-[50%] items-center gap-2">
                         <input className="w-full outline-none" type="text" />
                         <button>
