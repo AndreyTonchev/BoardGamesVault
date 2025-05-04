@@ -17,7 +17,7 @@ function GameCard({ gameData, index }) {
 
     return (
         <div className="container m-0 flex flex-row items-center gap-4 transition-all duration-500 hover:scale-105">
-            <span className="text-2xl font-semibold text-gray-400">
+            <span className="pl-3 text-2xl font-semibold text-gray-400">
                 {index}
             </span>
             <div className="flex aspect-square h-32 items-center justify-center">

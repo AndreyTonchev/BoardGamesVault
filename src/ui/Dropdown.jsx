@@ -10,10 +10,9 @@ function Dropdown({
     hasSortDirection = false,
     multiple = false,
     type,
+    onSelect,
 }) {
     const [selectedOption, setSelectedOption] = useState(options[0]);
-
-    console.log(options[0]);
 
     return (
         <div className="group relative container w-40 hover:rounded-b-none hover:shadow-none">
@@ -21,21 +20,36 @@ function Dropdown({
                 {type}
                 <Arrow className="transition-transform group-hover:rotate-180" />
             </span>
-            <ul className="absolute left-0 z-10 container m-0 hidden w-full flex-col overflow-hidden group-hover:block group-hover:rounded-t-none">
+            <ul className="absolute left-0 z-10 container m-0 hidden w-full flex-col space-y-1 overflow-hidden group-hover:block group-hover:rounded-t-none">
                 {options.map((option) => {
                     return hasSortDirection ? (
                         <>
-                            <li className="flex w-full flex-row items-center justify-between gap-1">
+                            <li
+                                className="flex w-full flex-row items-center justify-between gap-1 hover:cursor-pointer hover:text-amber-200"
+                                onClick={() =>
+                                    onSelect(`${option.toLowerCase()}_asc`)
+                                }
+                            >
                                 <span>{option}</span>
                                 <Ascending />
                             </li>
-                            <li className="flex w-full flex-row items-center justify-between gap-1">
+                            <li
+                                onClick={() =>
+                                    onSelect(`${option.toLowerCase()}_desc`)
+                                }
+                                className="flex w-full flex-row items-center justify-between gap-1 hover:cursor-pointer hover:text-amber-200"
+                            >
                                 <span>{option}</span>
                                 <Descending />
                             </li>
                         </>
                     ) : (
-                        <li>{option}</li>
+                        <li
+                            onClick={() => onSelect(option.toLowerCase())}
+                            className="hover:cursor-pointer hover:text-amber-200"
+                        >
+                            {option}
+                        </li>
                     );
                 })}
             </ul>

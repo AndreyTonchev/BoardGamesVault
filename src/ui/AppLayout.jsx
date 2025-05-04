@@ -1,4 +1,4 @@
-import { NavLink, Link, Outlet } from 'react-router';
+import { NavLink, Link, Outlet, useLocation } from 'react-router';
 import {
     FaHome,
     FaUser,
@@ -11,6 +11,8 @@ import Dropdown from './DropDown';
 import NavButton from './NavButton';
 
 function AppLayout() {
+    const location = useLocation();
+
     return (
         <>
             <aside className="container flex h-auto w-[15%] flex-col">
@@ -33,15 +35,23 @@ function AppLayout() {
 
             <section className="flex flex-1 flex-col">
                 <header className="flex justify-center">
-                    <Dropdown
-                        options={['Name', 'Year', 'Rating']}
-                        hasSortDirection={true}
-                        type="Sort"
-                    />
-                    <Dropdown
-                        options={['Name', 'Year', 'Rating']}
-                        type="Type"
-                    />
+                    {location.pathname.startsWith('/games/') && (
+                        <>
+                            <Dropdown
+                                options={['Name', 'Year', 'Rating']}
+                                hasSortDirection={true}
+                                type="Sort"
+                            />
+                            <Dropdown
+                                options={[
+                                    'Board Game',
+                                    'Expansion',
+                                    'Accessory',
+                                ]}
+                                type="Type"
+                            />
+                        </>
+                    )}
                     <form className="container flex w-[50%] items-center gap-2">
                         <input className="w-full outline-none" type="text" />
                         <button>
