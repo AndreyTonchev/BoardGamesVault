@@ -8,11 +8,20 @@ function SearchResults() {
     console.log(games);
 
     return (
-        <ul className="space-y-10">
-            {games.map((gameData) => (
-                <GameCard gameData={gameData} />
-            ))}
-        </ul>
+        <>
+            <div className="text-2xl font-semibold text-gray-200">
+                {games.length} games matching the search
+            </div>
+            <div className="m-5 grid w-[95%] grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
+                {games.map((gameData, index) => (
+                    <GameCard
+                        gameData={gameData}
+                        index={index + 1}
+                        key={index}
+                    />
+                ))}
+            </div>
+        </>
     );
 }
 
