@@ -17,7 +17,7 @@ function SearchResults() {
                     <GameCard
                         gameData={gameData}
                         index={index + 1}
-                        key={index}
+                        key={gameData.id}
                     />
                 ))}
             </div>

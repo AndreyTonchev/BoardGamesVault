@@ -21,7 +21,7 @@ function GameCard({ gameData, index }) {
                 {index}
             </span>
             <div className="flex aspect-square h-32 items-center justify-center">
-                <img className="h-[90%] rounded-xl" src={image} />
+                <img className="max-h-[90%] rounded-xl" src={image} />
             </div>
             <div className="flex h-full flex-col justify-center gap-1.5">
                 <h2 className="text-lg font-semibold">{name}</h2>

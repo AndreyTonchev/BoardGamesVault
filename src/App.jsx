@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import AppLayout from './ui/AppLayout';
-import Home from './ui/Home';
+import Home, { loader as homeLoader } from './ui/Home';
 import SearchResults, { loader as searchLoader } from './ui/SearchResults';
 
 const router = createBrowserRouter([
@@ -10,6 +10,7 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <Home />,
+                loader: homeLoader,
             },
             {
                 path: '/games/:query',

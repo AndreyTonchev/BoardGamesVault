@@ -1,20 +1,19 @@
-import { NavLink, Link, Outlet, useLocation } from 'react-router';
-import {
-    FaHome,
-    FaUser,
-    FaSearch,
-    FaDice,
-    FaDiceD20 as Logo,
-} from 'react-icons/fa';
+import { Outlet, useLocation, useNavigation } from 'react-router';
+import { FaHome, FaUser, FaDice, FaDiceD20 as Logo } from 'react-icons/fa';
 
 import Dropdown from './DropDown';
 import NavButton from './NavButton';
+import SearchBar from './SearchBar';
+import Loader from './Loader';
 
 function AppLayout() {
     const location = useLocation();
+    const navigation = useNavigation();
+    const isLoading = navigation.state === 'loading';
 
     return (
         <>
+            {isLoading && <Loader />}
             <aside className="container flex h-auto w-[15%] flex-col">
                 <header className="my-5 flex flex-col items-center gap-1 text-center text-4xl">
                     <Logo className="" />
@@ -52,12 +51,7 @@ function AppLayout() {
                             />
                         </>
                     )}
-                    <form className="container flex w-[50%] items-center gap-2">
-                        <input className="w-full outline-none" type="text" />
-                        <button>
-                            <FaSearch />
-                        </button>
-                    </form>
+                    <SearchBar />
                 </header>
 
                 <main className="m-5 flex-1 overflow-y-auto rounded-2xl">
