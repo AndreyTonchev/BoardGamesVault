@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import InputField from '../../ui/InputField';
 import { useState } from 'react';
 import supabase from '../../services/supabase';
+import Button from '../../ui/Button';
 
 function Signup() {
     const navigate = useNavigate();
@@ -118,9 +119,9 @@ function Signup() {
                         </InputField>
                     </div>
 
-                    <button className="container m-0 bg-blue-500 font-semibold text-neutral-200 transition-all duration-300 hover:bg-blue-700">
+                    <Button>
                         {loading ? 'Creating account...' : 'Sign up'}
-                    </button>
+                    </Button>
                     {error && (
                         <span className="self-center text-red-400">
                             {error}

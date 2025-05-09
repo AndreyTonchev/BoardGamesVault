@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import InputField from '../../ui/InputField';
 import supabase from '../../services/supabase';
 import { useState } from 'react';
+import Button from '../../ui/Button';
 
 function Login() {
     const navigate = useNavigate();
@@ -27,10 +28,13 @@ function Login() {
             });
             if (error) throw error;
 
+            console.log('user logged: ', data);
+
             navigate('/');
         } catch (error) {
             setError(error);
         } finally {
+            p;
             setLoading(false);
         }
     }
@@ -51,7 +55,7 @@ function Login() {
                         <InputField
                             bgColor="bg-neutral-900"
                             placeholder="Username"
-                            required="true"
+                            required={true}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         >
@@ -61,7 +65,7 @@ function Login() {
                             bgColor="bg-neutral-900"
                             placeholder="Password"
                             type="password"
-                            required="true"
+                            required={true}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         >
@@ -69,9 +73,7 @@ function Login() {
                         </InputField>
                     </div>
 
-                    <button className="container m-0 bg-blue-500 font-semibold text-neutral-200 transition-all duration-300 hover:bg-blue-700">
-                        {loading ? 'Logging in...' : 'Log in'}
-                    </button>
+                    <Button>{loading ? 'Logging in...' : 'Log in'}</Button>
                     {error && (
                         <span className="self-center text-red-400">
                             Invalid Email or Password!

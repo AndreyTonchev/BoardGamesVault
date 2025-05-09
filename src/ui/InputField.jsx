@@ -5,7 +5,7 @@ function InputField({
     onChange,
     placeholder,
     type = 'text',
-    required = 'false',
+    required = false,
 }) {
     return (
         <div className="flex flex-col gap-1">
