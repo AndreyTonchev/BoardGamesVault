@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import InputField from '../../ui/InputField';
 import { useState } from 'react';
-import supabase from '../supabase';
+import supabase from '../../services/supabase';
 
 function Signup() {
     const navigate = useNavigate();

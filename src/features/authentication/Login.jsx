@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import InputField from '../../ui/InputField';
-import supabase from '../supabase';
+import supabase from '../../services/supabase';
 import { useState } from 'react';
 
 function Login() {

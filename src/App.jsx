@@ -2,9 +2,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import AppLayout from './ui/AppLayout';
 import Home, { loader as homeLoader } from './ui/Home';
 import SearchResults, { loader as searchLoader } from './ui/SearchResults';
+import Profile, { loader as profileLoader } from './features/Profile/Profile';
 
-import Signup from './services/authentication/Signup';
-import Login from './services/authentication/Login';
+import Signup from './features/authentication/Signup';
+import Login from './features/authentication/Login';
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
             {
                 path: '/signup',
                 element: <Signup />,
+            },
+            {
+                path: '/profile/:username',
+                element: <Profile />,
+                loader: profileLoader,
             },
         ],
     },
