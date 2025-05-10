@@ -72,15 +72,29 @@ function AuthProvider({ children }) {
         }
     };
 
-    const signUp = async (email, password) => {
+    const signUp = async (email, password, username) => {
         try {
             setLoading(true);
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
             });
 
-            if (error) throw error;
+            if (signUpError) throw signUpError;
+
+            if (data.user) {
+                const { error: profileError } = await supabase
+                    .from('user_profiles')
+                    .insert([
+                        {
+                            id: data.user.id,
+                            username: username,
+                            display_name: username,
+                        },
+                    ]);
+
+                if (profileError) throw profileError;
+            }
 
             return { data, error: null };
         } catch (error) {

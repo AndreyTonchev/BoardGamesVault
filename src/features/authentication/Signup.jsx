@@ -21,10 +21,6 @@ function Signup() {
         navigate('/login');
     }
 
-    console.log(
-        username + ' ' + email + ' ' + password + ' ' + passwordConfirmation,
-    );
-
     async function handleSignUp(e) {
         e.preventDefault();
         setLoading(true);
@@ -39,16 +35,8 @@ function Signup() {
                 throw new Error('Password must be at least 6 symbols');
             }
 
-            const { data, error: signUpError } = await signUp(email, password);
-            if (signUpError) throw signUpError;
-
-            if (data.user) {
-                const { error: profileError } = await supabase
-                    .from('user_profiles')
-                    .insert([{ id: data.user.id, name: username }]);
-
-                if (profileError) throw profileError;
-            }
+            const { data, error } = await signUp(email, password, username);
+            if (error) throw error;
 
             navigate('/');
         } catch (error) {
@@ -57,9 +45,6 @@ function Signup() {
             setLoading(false);
         }
     }
-
-    console.error('Signup error:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
 
     return (
         <div className="fixed inset-0 flex items-center justify-center">
