@@ -11,11 +11,13 @@ import Dropdown from './DropDown';
 import NavButton from './NavButton';
 import SearchBar from './SearchBar';
 import Loader from './Loader';
+import { useNavigate } from 'react-router';
 
 function AppLayout() {
     const { user, logOut, loading: authLoading } = useAuth();
     console.log(user);
 
+    const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
     const isLoading = navigation.state === 'loading';
@@ -46,17 +48,24 @@ function AppLayout() {
                 </div>
                 {user ? (
                     <button
-                        className="m-1 flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xl underline-offset-3 aria-[current=page]:bg-neutral-700"
-                        onClick={logOut}
+                        className="m-1 flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xl underline-offset-3 transition-all duration-300 hover:bg-neutral-700"
+                        onClick={() => {
+                            logOut();
+                            navigate('/');
+                        }}
                         disabled={authLoading}
                     >
                         <LogOutIcon />
                         {authLoading ? 'Logging Out...' : 'Log Out'}
                     </button>
                 ) : (
-                    <NavButton to="/login" icon={<LogInIcon />}>
+                    <button
+                        className="m-1 flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xl underline-offset-3 transition-all duration-300 hover:bg-neutral-700"
+                        onClick={() => navigate('login')}
+                    >
+                        <LogInIcon />
                         Log in
-                    </NavButton>
+                    </button>
                 )}
             </aside>
 
