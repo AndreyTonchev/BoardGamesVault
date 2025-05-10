@@ -1,28 +1,28 @@
 import { Outlet, useLocation, useNavigation } from 'react-router';
 import { FaHome, FaUser, FaDice, FaDiceD20 as Logo } from 'react-icons/fa';
 import {
-    FaArrowRightFromBracket as LogOut,
-    FaArrowRightToBracket as LogIn,
+    FaArrowRightFromBracket as LogOutIcon,
+    FaArrowRightToBracket as LogInIcon,
 } from 'react-icons/fa6';
 
 import supabase from '../services/supabase';
-
+import { useAuth } from '../contexts/AuthContext';
 import Dropdown from './DropDown';
 import NavButton from './NavButton';
 import SearchBar from './SearchBar';
 import Loader from './Loader';
 
 function AppLayout() {
+    const { user, logOut } = useAuth();
+
     const location = useLocation();
     const navigation = useNavigation();
     const isLoading = navigation.state === 'loading';
 
-    async function logOut() {}
-
     return (
         <>
             {isLoading && <Loader />}
-            <aside className="container flex h-auto w-[15%] flex-col">
+            <aside className="container flex h-auto w-[15%] flex-col justify-between">
                 <div>
                     <header className="my-5 flex flex-col items-center gap-1 text-center text-4xl">
                         <Logo className="" />
@@ -40,6 +40,19 @@ function AppLayout() {
                         </NavButton>
                     </div>
                 </div>
+                {user ? (
+                    <button
+                        className="m-1 flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xl underline-offset-3 aria-[current=page]:bg-neutral-700"
+                        onClick={logOut}
+                    >
+                        <LogOutIcon />
+                        Log Out
+                    </button>
+                ) : (
+                    <NavButton to="/login" icon={<LogInIcon />}>
+                        Log in
+                    </NavButton>
+                )}
             </aside>
 
             <section className="flex flex-1 flex-col">

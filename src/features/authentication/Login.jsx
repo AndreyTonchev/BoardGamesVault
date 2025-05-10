@@ -3,9 +3,11 @@ import InputField from '../../ui/InputField';
 import supabase from '../../services/supabase';
 import { useState } from 'react';
 import Button from '../../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 function Login() {
     const navigate = useNavigate();
+    const { logIn } = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,19 +24,15 @@ function Login() {
         setError(null);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-            if (error) throw error;
+            const { data, error } = await logIn(email, password);
 
+            if (error) throw error;
             console.log('user logged: ', data);
 
             navigate('/');
         } catch (error) {
             setError(error);
         } finally {
-            p;
             setLoading(false);
         }
     }

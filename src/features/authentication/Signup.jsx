@@ -3,9 +3,11 @@ import InputField from '../../ui/InputField';
 import { useState } from 'react';
 import supabase from '../../services/supabase';
 import Button from '../../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 function Signup() {
     const navigate = useNavigate();
+    const { signUp } = useAuth();
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -37,11 +39,7 @@ function Signup() {
                 throw new Error('Password must be at least 6 symbols');
             }
 
-            const { data, error: signUpError } = await supabase.auth.signUp({
-                email,
-                password,
-            });
-
+            const { data, error: signUpError } = await signUp(email, password);
             if (signUpError) throw signUpError;
 
             if (data.user) {
