@@ -13,7 +13,8 @@ import SearchBar from './SearchBar';
 import Loader from './Loader';
 
 function AppLayout() {
-    const { user, logOut } = useAuth();
+    const { user, logOut, loading: authLoading } = useAuth();
+    console.log(user);
 
     const location = useLocation();
     const navigation = useNavigation();
@@ -32,7 +33,10 @@ function AppLayout() {
                         <NavButton to="/" icon={<FaHome />}>
                             Home
                         </NavButton>
-                        <NavButton to="profile" icon={<FaUser />}>
+                        <NavButton
+                            to={user ? `profile/${user.id}` : 'login'}
+                            icon={<FaUser />}
+                        >
                             Profile
                         </NavButton>
                         <NavButton to="games" icon={<FaDice />}>
@@ -44,9 +48,10 @@ function AppLayout() {
                     <button
                         className="m-1 flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xl underline-offset-3 aria-[current=page]:bg-neutral-700"
                         onClick={logOut}
+                        disabled={authLoading}
                     >
                         <LogOutIcon />
-                        Log Out
+                        {authLoading ? 'Logging Out...' : 'Log Out'}
                     </button>
                 ) : (
                     <NavButton to="/login" icon={<LogInIcon />}>

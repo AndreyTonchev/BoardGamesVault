@@ -22,7 +22,7 @@ function AuthProvider({ children }) {
                         error,
                     );
                 } else {
-                    setUser(session?.user?.id ?? null);
+                    setUser(session?.user ?? null);
                 }
             } catch (error) {
                 console.error('Error initializing Auth: ', error);
@@ -78,6 +78,9 @@ function AuthProvider({ children }) {
             const { data, error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: { display_name: username },
+                },
             });
 
             if (signUpError) throw signUpError;
@@ -128,6 +131,7 @@ function AuthProvider({ children }) {
         logIn,
         signUp,
         logOut,
+        loading,
     };
 
     return (

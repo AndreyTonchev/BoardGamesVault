@@ -18,10 +18,10 @@ function Profile() {
                         />
                         <div>
                             <h2 className="text-2xl font-semibold">
-                                {data.profile.name}
+                                {data.profile.display_name}
                             </h2>
                             <h3 className="text-sm text-neutral-500">
-                                @{data.profile.name}
+                                @{data.profile.username}
                             </h3>
                         </div>
                     </div>
@@ -68,7 +68,7 @@ export async function loader({ params }) {
         const { data: profileData, error: profileError } = await supabase
             .from('user_profiles')
             .select('*')
-            .eq('name', params.username)
+            .eq('id', params.userId)
             .single();
 
         if (profileError) throw profileError;
@@ -76,7 +76,7 @@ export async function loader({ params }) {
         const { data: gamesData = [], error: gamesError } = supabase
             .from('user_games')
             .select('*')
-            .eq('user_id', profileData.id);
+            .eq('user_id', params.userId);
 
         if (gamesError) throw gamesError;
 
