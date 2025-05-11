@@ -7,7 +7,7 @@ function Button({
 }) {
     return (
         <button
-            className={`${bgColor} ${hoverColor} ${textColor} container m-0 flex w-40 items-center justify-center gap-2 self-center font-semibold transition-all duration-300`}
+            className={`${bgColor} ${hoverColor} ${textColor} container m-0 flex w-40 cursor-pointer items-center justify-center gap-2 self-center font-semibold transition-all duration-300`}
             onClick={onClick}
         >
             {children}

@@ -19,8 +19,17 @@ import { useState } from 'react';
 
 function GamePage() {
     const { gameData, userCollections } = useLoaderData();
+
+    const initialCollection = userCollections || {
+        played: false,
+        liked: false,
+        owned: false,
+        wishlist: false,
+    };
+
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [collections, setCollections] = useState(initialCollection);
 
     const {
         image,
@@ -35,26 +44,43 @@ function GamePage() {
         id,
     } = gameData;
 
-    async function handleAddToCollection(type) {
+    async function handleAddToCollection(status) {
         setLoading(true);
         try {
-            const { data, error } = await supabase.from('user_games').insert([
+            const { error } = await supabase.from('user_games').insert([
                 {
                     user_id: user.id,
                     bgg_id: id,
-                    status: type,
+                    status: status,
                 },
             ]);
 
             if (error) throw error;
+            setCollections({ ...collections, [status]: true });
         } catch (error) {
-            console.log('Error adding game to:', type, 'Collection');
+            console.log('Error adding game to:', status, 'Collection');
         } finally {
             setLoading(false);
         }
     }
 
-    async function handleRemoveFromCollection(type) {}
+    async function handleRemoveFromCollection(status) {
+        setLoading(true);
+        try {
+            const { error } = await supabase
+                .from('user_games')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('bgg_id', id)
+                .eq('status', status);
+            if (error) throw error;
+            setCollections({ ...collections, [status]: false });
+        } catch (error) {
+            console.error('Error Removing game from:', status, 'collection');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <section className="container w-[95%] p-10">
@@ -96,29 +122,76 @@ function GamePage() {
                     {user && (
                         <div className="justify-left flex flex-row gap-3">
                             <Button
-                                onClick={() => handleAddToCollection('played')}
+                                bgColor={
+                                    collections.played
+                                        ? 'bg-blue-500'
+                                        : 'bg-neutral-900'
+                                }
+                                onClick={
+                                    !collections.played
+                                        ? () => handleAddToCollection('played')
+                                        : () =>
+                                              handleRemoveFromCollection(
+                                                  'played',
+                                              )
+                                }
                                 disabled={loading}
                             >
                                 <PlayedIcon />
                                 Played
                             </Button>
                             <Button
-                                onClick={() => handleAddToCollection('liked')}
+                                bgColor={
+                                    collections.liked
+                                        ? 'bg-blue-500'
+                                        : 'bg-neutral-900'
+                                }
+                                onClick={
+                                    !collections.liked
+                                        ? () => handleAddToCollection('liked')
+                                        : () =>
+                                              handleRemoveFromCollection(
+                                                  'liked',
+                                              )
+                                }
                                 disabled={loading}
                             >
                                 <LikeIcon />
                                 Liked
                             </Button>
                             <Button
-                                onClick={() => handleAddToCollection('owned')}
+                                bgColor={
+                                    collections.owned
+                                        ? 'bg-blue-500'
+                                        : 'bg-neutral-900'
+                                }
+                                onClick={
+                                    !collections.owned
+                                        ? () => handleAddToCollection('owned')
+                                        : () =>
+                                              handleRemoveFromCollection(
+                                                  'owned',
+                                              )
+                                }
                                 disabled={loading}
                             >
                                 <OwnedIcon />
                                 Owned
                             </Button>
                             <Button
-                                onClick={() =>
-                                    handleAddToCollection('wishlist')
+                                bgColor={
+                                    collections.wishlist
+                                        ? 'bg-blue-500'
+                                        : 'bg-neutral-900'
+                                }
+                                onClick={
+                                    !collections.wishlist
+                                        ? () =>
+                                              handleAddToCollection('wishlist')
+                                        : () =>
+                                              handleRemoveFromCollection(
+                                                  'wishlist',
+                                              )
                                 }
                                 disabled={loading}
                             >
@@ -168,6 +241,8 @@ export async function loader({ params }) {
                 userCollections: null,
             };
         }
+
+        console.log(userGameData);
 
         const userCollections = {
             played: false,
