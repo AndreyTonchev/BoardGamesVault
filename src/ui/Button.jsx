@@ -3,7 +3,7 @@ function Button({
     onClick,
     extraStyles,
     disabled = false,
-    type = 'button',
+    type = 'submit',
 }) {
     return (
         <button

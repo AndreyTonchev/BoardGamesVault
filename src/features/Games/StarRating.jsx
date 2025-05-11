@@ -5,11 +5,18 @@ import {
     FaStarHalfStroke as HalfStar,
 } from 'react-icons/fa6';
 
-export default function StarRating({ defaultRating = 0, onSetRating, rating }) {
+export default function StarRating({
+    defaultRating = 0,
+    onSetRating,
+    rating,
+    readOnly = false,
+}) {
     const [tempRating, setTempRating] = useState(defaultRating);
 
     function handleRating(rating) {
-        onSetRating(rating);
+        if (!readOnly && onSetRating) {
+            onSetRating(rating);
+        }
     }
 
     const stars = 5;
@@ -23,8 +30,9 @@ export default function StarRating({ defaultRating = 0, onSetRating, rating }) {
                         starIndex={i}
                         rating={tempRating || rating}
                         onSetRating={handleRating}
-                        onHoverIn={setTempRating}
-                        onHoverOut={() => setTempRating(0)}
+                        onHoverIn={readOnly ? null : setTempRating}
+                        onHoverOut={readOnly ? null : () => setTempRating(0)}
+                        readOnly={readOnly}
                     />
                 ))}
             </div>
@@ -33,11 +41,16 @@ export default function StarRating({ defaultRating = 0, onSetRating, rating }) {
     );
 }
 
-function Star({ starIndex, rating, onSetRating, onHoverIn, onHoverOut }) {
-    // Calculate how full this star should be (0, 0.5, or 1)
+function Star({
+    starIndex,
+    rating,
+    onSetRating,
+    onHoverIn,
+    onHoverOut,
+    readOnly,
+}) {
     const fillAmount = Math.max(0, Math.min(1, rating / 2 - starIndex));
 
-    // Determine which icon to show
     let icon;
     if (fillAmount === 0) {
         icon = <EmptyStar />;
@@ -47,36 +60,35 @@ function Star({ starIndex, rating, onSetRating, onHoverIn, onHoverOut }) {
         icon = <FullStar />;
     }
 
-    // Handle click based on which half of the star was clicked
-    const handleClick = (e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const halfWidth = rect.width / 2;
+    function handleClick(e) {
+        if (!readOnly) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const halfWidth = rect.width / 2;
 
-        // Determine if clicked on left or right half
-        const clickedRating = starIndex * 2 + (x < halfWidth ? 1 : 2);
-        onSetRating(clickedRating);
-    };
+            const clickedRating = starIndex * 2 + (x < halfWidth ? 1 : 2);
+            onSetRating(clickedRating);
+        }
+    }
 
-    // Handle hover based on which half is being hovered
-    const handleMouseMove = (e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const halfWidth = rect.width / 2;
+    function handleMouseMove(e) {
+        if (!readOnly) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const halfWidth = rect.width / 2;
 
-        // Determine if hovering on left or right half
-        const hoveredRating = starIndex * 2 + (x < halfWidth ? 1 : 2);
-        onHoverIn(hoveredRating);
-    };
+            const hoveredRating = starIndex * 2 + (x < halfWidth ? 1 : 2);
+            onHoverIn(hoveredRating);
+        }
+    }
 
     return (
         <span
             role="button"
-            className="relative cursor-pointer"
+            className={`relative ${readOnly ? '' : 'cursor-pointer'}`}
             onClick={handleClick}
             onMouseMove={handleMouseMove}
             onMouseLeave={onHoverOut}
-            style={{ userSelect: 'none' }}
         >
             {icon}
         </span>

@@ -29,6 +29,7 @@ function Dropdown({
                                 onClick={() =>
                                     onSelect(`${option.toLowerCase()}_asc`)
                                 }
+                                key={`${option.toLowerCase()}_asc`}
                             >
                                 <span>{option}</span>
                                 <Ascending />
@@ -38,6 +39,7 @@ function Dropdown({
                                     onSelect(`${option.toLowerCase()}_desc`)
                                 }
                                 className="flex w-full flex-row items-center justify-between gap-1 hover:cursor-pointer hover:text-amber-200"
+                                key={`${option.toLowerCase()}_desc`}
                             >
                                 <span>{option}</span>
                                 <Descending />
@@ -47,6 +49,7 @@ function Dropdown({
                         <li
                             onClick={() => onSelect(option.toLowerCase())}
                             className="hover:cursor-pointer hover:text-amber-200"
+                            key={option}
                         >
                             {option}
                         </li>

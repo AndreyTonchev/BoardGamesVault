@@ -18,10 +18,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import supabase from '../../services/supabase';
 import { useState } from 'react';
 import StarRating from './StarRating';
+import Review from './Review';
 
 function GamePage() {
-    const { gameData, userCollections } = useLoaderData();
+    const { gameData, userCollections, gameReviews } = useLoaderData();
 
+    const initialReviews = gameReviews || [];
     const initialCollection = userCollections || {
         played: false,
         liked: false,
@@ -31,7 +33,9 @@ function GamePage() {
 
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+
     const [collections, setCollections] = useState(initialCollection);
+    const [reviews, setReviews] = useState(initialReviews);
 
     const [reviewRating, setReviewRating] = useState(0);
     const [review, setReview] = useState('');
@@ -84,20 +88,42 @@ function GamePage() {
         e.preventDefault();
         setLoading(true);
 
+        console.log({
+            user_id: user.id,
+            bgg_id: parseInt(id),
+            user_name: user.user_metadata.display_name,
+            rating: reviewRating,
+            content: review,
+        });
+
         try {
-            const { error } = await supabase.from('user_content').insert([
-                {
-                    user_id: user.id,
-                    bgg_id: id,
-                    user_name: user.user_metadata.display_name,
-                    rating: reviewRating,
-                    content: review,
-                },
-            ]);
+            const { data, error } = await supabase
+                .from('user_content')
+                .insert([
+                    {
+                        user_id: user.id,
+                        bgg_id: id,
+                        user_name: user.user_metadata.display_name,
+                        rating: reviewRating,
+                        content: review,
+                    },
+                ])
+                .select();
 
             if (error) throw error;
+
+            const newReview = {
+                id: data[0].id,
+                content: data[0].content,
+                rating: data[0].rating,
+                date: data[0].created_at,
+                display_name: data[0].user_name,
+                user_id: data[0].user_id,
+            };
+
+            setReviews([...reviews, newReview]);
         } catch (error) {
-            console.error('Error submiting review');
+            console.error('Error submiting review:', error);
         } finally {
             setReview('');
             setReviewRating(0);
@@ -233,6 +259,9 @@ function GamePage() {
                         <Button disabled={loading}>Post Review</Button>
                     </form>
                 )}
+                {reviews.map((item) => (
+                    <Review data={item} key={item.id} />
+                ))}
             </div>
         </section>
     );
@@ -252,21 +281,20 @@ export async function loader({ params }) {
             };
         }
 
-        const { data: userGameData, error } = await supabase
+        const { data: userGameData, error: collectionError } = await supabase
             .from('user_games')
             .select('*')
             .eq('user_id', session.user.id)
             .eq('bgg_id', params.gameId);
 
-        if (error) {
+        if (collectionError) {
             console.error('Error fetching user collection:', error);
             return {
                 gameData,
                 userCollections: null,
+                reviews: null,
             };
         }
-
-        console.log(userGameData);
 
         const userCollections = {
             played: false,
@@ -281,9 +309,37 @@ export async function loader({ params }) {
             }
         });
 
+        const { data: contentData, error: contentError } = await supabase
+            .from('user_content')
+            .select('*')
+            .eq('bgg_id', params.gameId);
+
+        if (contentError) {
+            console.error('Error fetching Game Content:', error);
+            return {
+                gameData,
+                userCollections,
+                reviews: null,
+            };
+        }
+
+        const gameReviews = [];
+
+        contentData?.forEach((item) => {
+            gameReviews.push({
+                id: item.id,
+                content: item.content,
+                rating: item.rating,
+                date: item.created_at,
+                display_name: item.user_name,
+                user_id: item.user_id,
+            });
+        });
+
         return {
             gameData,
             userCollections,
+            gameReviews,
         };
     } catch (error) {
         console.error('Error in Game Loader:', error);
