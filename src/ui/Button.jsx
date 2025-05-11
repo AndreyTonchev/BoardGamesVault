@@ -1,14 +1,16 @@
 function Button({
     children,
-    bgColor = 'bg-blue-500',
     onClick,
-    hoverColor = 'hover:bg-blue-700',
-    textColor = 'text-neutral-200',
+    extraStyles,
+    disabled = false,
+    type = 'button',
 }) {
     return (
         <button
-            className={`${bgColor} ${hoverColor} ${textColor} container m-0 flex w-40 cursor-pointer items-center justify-center gap-2 self-center font-semibold transition-all duration-300`}
+            type={type}
+            className={`container m-0 box-border flex w-40 cursor-pointer items-center justify-center gap-2 self-center bg-blue-700 font-semibold text-neutral-200 transition-all duration-300 hover:bg-blue-500 ${extraStyles}`}
             onClick={onClick}
+            disabled={disabled}
         >
             {children}
         </button>

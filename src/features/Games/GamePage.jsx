@@ -7,6 +7,7 @@ import {
     FaRegClock,
     FaAlignLeft,
     FaRegStar,
+    FaRegComment,
     FaRegHeart as LikeIcon,
     FaRegBookmark as OwnedIcon,
     FaRegCircleCheck as PlayedIcon,
@@ -16,6 +17,7 @@ import GameStats from './GameStats';
 import { useAuth } from '../../contexts/AuthContext';
 import supabase from '../../services/supabase';
 import { useState } from 'react';
+import StarRating from './StarRating';
 
 function GamePage() {
     const { gameData, userCollections } = useLoaderData();
@@ -31,6 +33,9 @@ function GamePage() {
     const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState(initialCollection);
 
+    const [reviewRating, setReviewRating] = useState(0);
+    const [review, setReview] = useState('');
+
     const {
         image,
         name,
@@ -44,47 +49,65 @@ function GamePage() {
         id,
     } = gameData;
 
-    async function handleAddToCollection(status) {
+    async function handleCollectionButton(status) {
         setLoading(true);
         try {
-            const { error } = await supabase.from('user_games').insert([
-                {
-                    user_id: user.id,
-                    bgg_id: id,
-                    status: status,
-                },
-            ]);
+            if (collections[status] === false) {
+                const { error } = await supabase.from('user_games').insert([
+                    {
+                        user_id: user.id,
+                        bgg_id: id,
+                        status: status,
+                    },
+                ]);
 
-            if (error) throw error;
-            setCollections({ ...collections, [status]: true });
+                if (error) throw error;
+                setCollections({ ...collections, [status]: true });
+            } else {
+                const { error } = await supabase
+                    .from('user_games')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('bgg_id', id)
+                    .eq('status', status);
+                if (error) throw error;
+                setCollections({ ...collections, [status]: false });
+            }
         } catch (error) {
-            console.log('Error adding game to:', status, 'Collection');
+            console.log('Error changing game to:', status, 'Collection');
         } finally {
             setLoading(false);
         }
     }
 
-    async function handleRemoveFromCollection(status) {
+    async function onSubmitReview(e) {
+        e.preventDefault();
         setLoading(true);
+
         try {
-            const { error } = await supabase
-                .from('user_games')
-                .delete()
-                .eq('user_id', user.id)
-                .eq('bgg_id', id)
-                .eq('status', status);
+            const { error } = await supabase.from('user_content').insert([
+                {
+                    user_id: user.id,
+                    bgg_id: id,
+                    user_name: user.user_metadata.display_name,
+                    rating: reviewRating,
+                    content: review,
+                },
+            ]);
+
             if (error) throw error;
-            setCollections({ ...collections, [status]: false });
         } catch (error) {
-            console.error('Error Removing game from:', status, 'collection');
+            console.error('Error submiting review');
         } finally {
+            setReview('');
+            setReviewRating(0);
             setLoading(false);
         }
     }
 
     return (
         <section className="container w-[95%] p-10">
-            <div className="border-b-1 border-neutral-500 pb-5">
+            <div className="mb-5 border-b-1 border-neutral-500 pb-5">
                 <img className="m-auto max-h-[50vh]" src={image} />
                 <div className="mt-5 flex flex-col gap-5">
                     <div>
@@ -120,78 +143,51 @@ function GamePage() {
                         />
                     </div>
                     {user && (
-                        <div className="justify-left flex flex-row gap-3">
+                        <div className="flex flex-row gap-3">
                             <Button
-                                bgColor={
+                                extraStyles={
                                     collections.played
-                                        ? 'bg-blue-500'
-                                        : 'bg-neutral-900'
+                                        ? 'bg-blue-700'
+                                        : 'bg-neutral-700'
                                 }
-                                onClick={
-                                    !collections.played
-                                        ? () => handleAddToCollection('played')
-                                        : () =>
-                                              handleRemoveFromCollection(
-                                                  'played',
-                                              )
-                                }
+                                onClick={() => handleCollectionButton('played')}
                                 disabled={loading}
                             >
                                 <PlayedIcon />
                                 Played
                             </Button>
                             <Button
-                                bgColor={
+                                extraStyles={
                                     collections.liked
-                                        ? 'bg-blue-500'
-                                        : 'bg-neutral-900'
+                                        ? 'bg-blue-700'
+                                        : 'bg-neutral-700'
                                 }
-                                onClick={
-                                    !collections.liked
-                                        ? () => handleAddToCollection('liked')
-                                        : () =>
-                                              handleRemoveFromCollection(
-                                                  'liked',
-                                              )
-                                }
+                                onClick={() => handleCollectionButton('liked')}
                                 disabled={loading}
                             >
                                 <LikeIcon />
                                 Liked
                             </Button>
                             <Button
-                                bgColor={
+                                extraStyles={
                                     collections.owned
-                                        ? 'bg-blue-500'
-                                        : 'bg-neutral-900'
+                                        ? 'bg-blue-700'
+                                        : 'bg-neutral-700'
                                 }
-                                onClick={
-                                    !collections.owned
-                                        ? () => handleAddToCollection('owned')
-                                        : () =>
-                                              handleRemoveFromCollection(
-                                                  'owned',
-                                              )
-                                }
+                                onClick={() => handleCollectionButton('owned')}
                                 disabled={loading}
                             >
                                 <OwnedIcon />
                                 Owned
                             </Button>
                             <Button
-                                bgColor={
+                                extraStyles={
                                     collections.wishlist
-                                        ? 'bg-blue-500'
-                                        : 'bg-neutral-900'
+                                        ? 'bg-blue-700'
+                                        : 'bg-neutral-700'
                                 }
-                                onClick={
-                                    !collections.wishlist
-                                        ? () =>
-                                              handleAddToCollection('wishlist')
-                                        : () =>
-                                              handleRemoveFromCollection(
-                                                  'wishlist',
-                                              )
+                                onClick={() =>
+                                    handleCollectionButton('wishlist')
                                 }
                                 disabled={loading}
                             >
@@ -209,6 +205,34 @@ function GamePage() {
                         </p>
                     </div>
                 </div>
+            </div>
+            <div className="flex flex-col gap-5">
+                <div className="flex flex-row items-center gap-2 text-2xl font-semibold">
+                    <FaRegComment />
+                    <h2>Reviews and Comments</h2>
+                </div>
+
+                {user && (
+                    <form
+                        className="flex flex-col justify-start gap-3 rounded-xl border-1 border-neutral-500 bg-neutral-700 p-4 text-neutral-200"
+                        onSubmit={onSubmitReview}
+                    >
+                        <h3 className="font-semibold">Your Rating:</h3>
+                        <StarRating
+                            rating={reviewRating}
+                            onSetRating={setReviewRating}
+                        />
+                        <span className="font-semibold">Write a Review</span>
+                        <textarea
+                            value={review}
+                            placeholder="Share your thoughts about the game..."
+                            onChange={(e) => setReview(e.target.value)}
+                            className="rounded-lg border-1 border-neutral-500 bg-neutral-800 px-3 py-2"
+                            rows={4}
+                        />
+                        <Button disabled={loading}>Post Review</Button>
+                    </form>
+                )}
             </div>
         </section>
     );
