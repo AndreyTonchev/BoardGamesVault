@@ -5,9 +5,16 @@ import {
     FaStar as FullStar,
     FaStarHalfStroke as HalfStar,
 } from 'react-icons/fa6';
+import { useNavigate } from 'react-router';
 
 function GameCard({ gameData, index }) {
-    const { name, image, rating, published, minplayers, maxplayers } = gameData;
+    const { name, image, rating, published, minplayers, maxplayers, id } =
+        gameData;
+    const navigate = useNavigate();
+
+    function navigateToGamePage() {
+        navigate(`/game/${id}`);
+    }
 
     const renderStar = (rating, starPosition) => {
         if (rating >= 2 * starPosition) return <FullStar />;
@@ -16,7 +23,10 @@ function GameCard({ gameData, index }) {
     };
 
     return (
-        <div className="container m-0 flex flex-row items-center gap-4 transition-all duration-500 hover:scale-105">
+        <div
+            className="container m-0 flex cursor-pointer flex-row items-center gap-4 transition-all duration-500 hover:scale-105"
+            onClick={navigateToGamePage}
+        >
             <span className="pl-3 text-2xl font-semibold text-gray-400">
                 {index}
             </span>

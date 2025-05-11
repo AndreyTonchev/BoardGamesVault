@@ -12,10 +12,10 @@ import NavButton from './NavButton';
 import SearchBar from './SearchBar';
 import Loader from './Loader';
 import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 function AppLayout() {
     const { user, logOut, loading: authLoading } = useAuth();
-    console.log(user);
 
     const navigate = useNavigate();
     const location = useLocation();

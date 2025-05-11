@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import AppLayout from './ui/AppLayout';
+
 import Home, { loader as homeLoader } from './ui/Home';
 import SearchResults, { loader as searchLoader } from './ui/SearchResults';
 import Profile, { loader as profileLoader } from './features/Profile/Profile';
+import GamePage, { loader as gameLoader } from './features/Games/GamePage';
 
 import Signup from './features/authentication/Signup';
 import Login from './features/authentication/Login';
@@ -33,6 +35,11 @@ const router = createBrowserRouter([
                 path: '/profile/:userId',
                 element: <Profile />,
                 loader: profileLoader,
+            },
+            {
+                path: '/game/:gameId',
+                element: <GamePage />,
+                loader: gameLoader,
             },
         ],
     },

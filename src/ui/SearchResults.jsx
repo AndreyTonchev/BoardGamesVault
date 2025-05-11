@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router';
 import { getGameDataFromId, getGameIdsFromQuery } from '../utils/helpers';
-import GameCard from './GameCard';
+import GameCard from '../features/Games/GameCard';
 
 function SearchResults() {
     const games = useLoaderData();

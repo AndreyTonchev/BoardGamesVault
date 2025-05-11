@@ -1,4 +1,4 @@
-import { useLoaderData } from 'react-router';
+import { redirect, useLoaderData } from 'react-router';
 import supabase from '../../services/supabase';
 import Button from '../../ui/Button';
 import Stats from './Stats';
@@ -59,10 +59,10 @@ export async function loader({ params }) {
 
     if (sessionError) throw sessionError;
 
-    // if (!session) {
-    //     navigate('/signin');
-    //     return;
-    // }
+    if (!session) {
+        redirect('/login');
+        return;
+    }
 
     try {
         const { data: profileData, error: profileError } = await supabase
@@ -73,7 +73,7 @@ export async function loader({ params }) {
 
         if (profileError) throw profileError;
 
-        const { data: gamesData = [], error: gamesError } = supabase
+        const { data: gamesData = [], error: gamesError } = await supabase
             .from('user_games')
             .select('*')
             .eq('user_id', params.userId);
