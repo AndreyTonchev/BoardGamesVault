@@ -274,41 +274,6 @@ export async function loader({ params }) {
             data: { session },
         } = await supabase.auth.getSession();
 
-        if (!session) {
-            return {
-                gameData,
-                userCollections: null,
-            };
-        }
-
-        const { data: userGameData, error: collectionError } = await supabase
-            .from('user_games')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .eq('bgg_id', params.gameId);
-
-        if (collectionError) {
-            console.error('Error fetching user collection:', error);
-            return {
-                gameData,
-                userCollections: null,
-                reviews: null,
-            };
-        }
-
-        const userCollections = {
-            played: false,
-            liked: false,
-            owned: false,
-            wishlist: false,
-        };
-
-        userGameData?.forEach((item) => {
-            if (item.status in userCollections) {
-                userCollections[item.status] = true;
-            }
-        });
-
         const { data: contentData, error: contentError } = await supabase
             .from('user_content')
             .select('*')
@@ -318,8 +283,8 @@ export async function loader({ params }) {
             console.error('Error fetching Game Content:', error);
             return {
                 gameData,
-                userCollections,
                 reviews: null,
+                userCollections: null,
             };
         }
 
@@ -336,10 +301,46 @@ export async function loader({ params }) {
             });
         });
 
+        if (!session) {
+            return {
+                gameData,
+                gameReviews,
+                userCollections: null,
+            };
+        }
+
+        const { data: userGameData, error: collectionError } = await supabase
+            .from('user_games')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .eq('bgg_id', params.gameId);
+
+        if (collectionError) {
+            console.error('Error fetching user collection:', error);
+            return {
+                gameData,
+                gameReviews,
+                userCollections: null,
+            };
+        }
+
+        const userCollections = {
+            played: false,
+            liked: false,
+            owned: false,
+            wishlist: false,
+        };
+
+        userGameData?.forEach((item) => {
+            if (item.status in userCollections) {
+                userCollections[item.status] = true;
+            }
+        });
+
         return {
             gameData,
-            userCollections,
             gameReviews,
+            userCollections,
         };
     } catch (error) {
         console.error('Error in Game Loader:', error);
