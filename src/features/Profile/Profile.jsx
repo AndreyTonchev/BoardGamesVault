@@ -1,12 +1,18 @@
-import { redirect, useLoaderData } from 'react-router';
+import { redirect, useLoaderData, useNavigate } from 'react-router';
 import supabase from '../../services/supabase';
 import Button from '../../ui/Button';
 import Stats from './Stats';
+import { useEffect, useState } from 'react';
+import InputField from '../../ui/InputField';
+import EditProfile from './EditProfile';
+import GameList from '../Games/GameList';
+import { getGameDataFromId } from '../../utils/helpers';
 
 function Profile() {
     const data = useLoaderData();
-    console.log(data);
-
+    const [editToggle, setEditToggle] = useState(false);
+    const [selectedCollection, setSelectedCollection] = useState('owned');
+    console.log(data.collections);
     return (
         <div className="w-[95%] text-neutral-200">
             <section className="container flex flex-col gap-6 p-6">
@@ -14,7 +20,10 @@ function Profile() {
                     <div className="flex items-center justify-center gap-4">
                         <img
                             className="h-25 rounded-full"
-                            src="../../default_avatar.jpg"
+                            src={
+                                data.profile.avatar_url ||
+                                '../../default_avatar.jpg'
+                            }
                         />
                         <div>
                             <h2 className="text-2xl font-semibold">
@@ -26,7 +35,9 @@ function Profile() {
                         </div>
                     </div>
                     {data.user.id === data.profile.id ? (
-                        <Button>Edit Profile</Button>
+                        <Button onClick={() => setEditToggle(!editToggle)}>
+                            Edit Profile
+                        </Button>
                     ) : (
                         <Button>Add Friend</Button>
                     )}
@@ -47,6 +58,42 @@ function Profile() {
                     </Stats>
                 </div>
             </section>
+            {editToggle && (
+                <EditProfile profile={data.profile} toggle={setEditToggle} />
+            )}
+            <section className="container flex flex-col gap-6 p-6">
+                <div className="flex flex-row justify-between">
+                    <h2 className="text-2xl font-semibold">My Collection</h2>
+                    <div className="flex flex-row gap-2">
+                        <button
+                            className="cursor-pointer"
+                            onClick={() => setSelectedCollection('owned')}
+                        >
+                            Owned
+                        </button>
+                        <button
+                            className="cursor-pointer"
+                            onClick={() => setSelectedCollection('played')}
+                        >
+                            Played
+                        </button>
+                        <button
+                            className="cursor-pointer"
+                            onClick={() => setSelectedCollection('liked')}
+                        >
+                            Liked
+                        </button>
+                        <button
+                            className="cursor-pointer"
+                            onClick={() => setSelectedCollection('wishlist')}
+                        >
+                            Wishlist
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <GameList data={data.collections[selectedCollection]}></GameList>
         </div>
     );
 }
@@ -80,12 +127,30 @@ export async function loader({ params }) {
 
         if (gamesError) throw gamesError;
 
-        const owned = gamesData.filter((game) => game.status === 'owned') || [];
-        const played =
+        const ownedGames =
+            gamesData.filter((game) => game.status === 'owned') || [];
+        const playedGames =
             gamesData.filter((game) => game.status === 'played') || [];
-        const wishlist =
+        const wishlistGames =
             gamesData.filter((game) => game.status === 'wishlist') || [];
-        const liked = gamesData.filter((game) => game.status === 'liked') || [];
+        const likedGames =
+            gamesData.filter((game) => game.status === 'liked') || [];
+
+        const owned = await Promise.all(
+            ownedGames.map((item) => getGameDataFromId(item.bgg_id)),
+        );
+
+        const played = await Promise.all(
+            playedGames.map((item) => getGameDataFromId(item.bgg_id)),
+        );
+
+        const wishlist = await Promise.all(
+            wishlistGames.map((item) => getGameDataFromId(item.bgg_id)),
+        );
+
+        const liked = await Promise.all(
+            likedGames.map((item) => getGameDataFromId(item.bgg_id)),
+        );
 
         const collections = {
             owned,

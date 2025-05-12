@@ -60,7 +60,6 @@ function Signup() {
                 >
                     <div className="flex flex-col gap-3">
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="Username"
                             required={true}
                             value={username}
@@ -69,7 +68,6 @@ function Signup() {
                             Username:
                         </InputField>
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="youremail@mail.com"
                             required={true}
                             value={email}
@@ -79,7 +77,6 @@ function Signup() {
                             Email:
                         </InputField>
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="Password"
                             type="password"
                             required={true}
@@ -89,7 +86,6 @@ function Signup() {
                             Password:
                         </InputField>
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="Confirm Password"
                             type="password"
                             required={true}

@@ -51,7 +51,6 @@ function Login() {
                 >
                     <div className="flex flex-col gap-3">
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="Username"
                             required={true}
                             value={email}
@@ -60,7 +59,6 @@ function Login() {
                             Email:
                         </InputField>
                         <InputField
-                            bgColor="bg-neutral-900"
                             placeholder="Password"
                             type="password"
                             required={true}

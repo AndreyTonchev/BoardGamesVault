@@ -2,6 +2,7 @@ import { useLoaderData, useOutletContext } from 'react-router';
 import { getGameDataFromId, getGameIdsFromQuery } from '../utils/helpers';
 import GameCard from '../features/Games/GameCard';
 import { processGames } from '../utils/gamesSoring';
+import GameList from '../features/Games/GameList';
 
 function SearchResults() {
     const games = useLoaderData();
@@ -10,20 +11,9 @@ function SearchResults() {
     const sortedGames = processGames(games, sort, filter);
 
     return (
-        <>
-            <div className="text-2xl font-semibold text-gray-200">
-                {sortedGames.length} games matching the search
-            </div>
-            <div className="m-5 grid w-[95%] grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                {sortedGames.map((gameData, index) => (
-                    <GameCard
-                        gameData={gameData}
-                        index={index + 1}
-                        key={gameData.id}
-                    />
-                ))}
-            </div>
-        </>
+        <GameList
+            data={sortedGames}
+        >{`${sortedGames.length} games matching your seatch`}</GameList>
     );
 }
 

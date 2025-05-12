@@ -3,7 +3,7 @@ export function sortGames(games, sort) {
 
     if (sort === '') return games;
 
-    const field = (sort?.field || 'name').toLowerCase();
+    const field = (sort?.field || '').toLowerCase();
     const direction = (sort?.direction || 'desc').toLowerCase();
     const isAsc = direction === 'asc';
 
@@ -58,12 +58,12 @@ export function filterGames(games, filter) {
 
 export function parseSortValue(value) {
     if (!value || typeof value !== 'string') {
-        return { field: 'name', direction: 'desc' };
+        return { field: '', direction: '' };
     }
 
     const parts = value.split('_');
     if (parts.length !== 2) {
-        return { field: 'name', direction: 'desc' };
+        return { field: '', direction: '' };
     }
 
     return {

@@ -2,6 +2,7 @@ import { useLoaderData, useOutletContext } from 'react-router';
 import { getGameDataFromId, getPopularGames } from '../../utils/helpers';
 import GameCard from './GameCard';
 import { processGames } from '../../utils/gamesSoring';
+import GameList from './GameList';
 
 function PopularGames() {
     const games = useLoaderData();
@@ -9,22 +10,7 @@ function PopularGames() {
 
     const sortedGames = processGames(games, sort, filter);
 
-    return (
-        <>
-            <div className="text-2xl font-semibold text-gray-200">
-                Popular games right now
-            </div>
-            <div className="m-5 grid w-[95%] grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                {sortedGames.map((gameData, index) => (
-                    <GameCard
-                        gameData={gameData}
-                        index={index + 1}
-                        key={gameData.id}
-                    />
-                ))}
-            </div>
-        </>
-    );
+    return <GameList data={sortedGames}>Popular games right now</GameList>;
 }
 
 export async function loader() {

@@ -40,6 +40,8 @@ function GamePage() {
     const [reviewRating, setReviewRating] = useState(0);
     const [review, setReview] = useState('');
 
+    console.log(reviews);
+
     const {
         image,
         name,
@@ -91,7 +93,7 @@ function GamePage() {
         console.log({
             user_id: user.id,
             bgg_id: parseInt(id),
-            user_name: user.user_metadata.display_name,
+            display_name: user.user_metadata.display_name,
             rating: reviewRating,
             content: review,
         });
@@ -103,7 +105,7 @@ function GamePage() {
                     {
                         user_id: user.id,
                         bgg_id: id,
-                        user_name: user.user_metadata.display_name,
+                        display_name: user.user_metadata.display_name,
                         rating: reviewRating,
                         content: review,
                     },
@@ -243,12 +245,12 @@ function GamePage() {
                         className="flex flex-col justify-start gap-3 rounded-xl border-1 border-neutral-500 bg-neutral-700 p-4 text-neutral-200"
                         onSubmit={onSubmitReview}
                     >
-                        <h3 className="font-semibold">Your Rating:</h3>
+                        <label className="font-semibold">Your Rating:</label>
                         <StarRating
                             rating={reviewRating}
                             onSetRating={setReviewRating}
                         />
-                        <span className="font-semibold">Write a Review</span>
+                        <label className="font-semibold">Write a Review</label>
                         <textarea
                             value={review}
                             placeholder="Share your thoughts about the game..."
@@ -296,7 +298,7 @@ export async function loader({ params }) {
                 content: item.content,
                 rating: item.rating,
                 date: item.created_at,
-                display_name: item.user_name,
+                display_name: item.display_name,
                 user_id: item.user_id,
             });
         });
