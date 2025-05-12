@@ -1,18 +1,19 @@
 import { Outlet, useLocation, useNavigation } from 'react-router';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
+
 import { FaHome, FaUser, FaDice, FaDiceD20 as Logo } from 'react-icons/fa';
 import {
     FaArrowRightFromBracket as LogOutIcon,
     FaArrowRightToBracket as LogInIcon,
 } from 'react-icons/fa6';
 
-import supabase from '../services/supabase';
-import { useAuth } from '../contexts/AuthContext';
 import Dropdown from './DropDown';
 import NavButton from './NavButton';
 import SearchBar from './SearchBar';
 import Loader from './Loader';
-import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { parseSortValue } from '../utils/gamesSoring';
 
 function AppLayout() {
     const { user, logOut, loading: authLoading } = useAuth();
@@ -21,6 +22,27 @@ function AppLayout() {
     const location = useLocation();
     const navigation = useNavigation();
     const isLoading = navigation.state === 'loading';
+
+    const [sortValue, setSortValue] = useState('');
+    const [filterType, setFilterType] = useState('boardgame');
+
+    useEffect(() => {
+        setSortValue('');
+        setFilterType('boardgame');
+    }, [location.pathname]);
+
+    const sortContext = {
+        sort: parseSortValue(sortValue),
+        filter: filterType,
+    };
+
+    function handleSortChange(value) {
+        setSortValue(value);
+    }
+
+    function handleFilterChange(value) {
+        setFilterType(value);
+    }
 
     return (
         <>
@@ -71,11 +93,13 @@ function AppLayout() {
 
             <section className="flex flex-1 flex-col">
                 <header className="flex justify-center">
-                    {location.pathname.startsWith('/games/') && (
+                    {(location.pathname.startsWith('/games/') ||
+                        location.pathname === '/games') && (
                         <>
                             <Dropdown
                                 options={['Name', 'Year', 'Rating']}
                                 hasSortDirection={true}
+                                onSelect={handleSortChange}
                                 type="Sort"
                             />
                             <Dropdown
@@ -85,6 +109,7 @@ function AppLayout() {
                                     'Accessory',
                                     'Users',
                                 ]}
+                                onSelect={handleFilterChange}
                                 type="Type"
                             />
                         </>
@@ -93,7 +118,7 @@ function AppLayout() {
                 </header>
 
                 <main className="m-5 flex-1 overflow-y-auto rounded-2xl">
-                    <Outlet />
+                    <Outlet context={sortContext} />
                 </main>
             </section>
         </>

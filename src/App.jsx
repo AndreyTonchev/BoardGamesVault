@@ -5,6 +5,9 @@ import Home, { loader as homeLoader } from './ui/Home';
 import SearchResults, { loader as searchLoader } from './ui/SearchResults';
 import Profile, { loader as profileLoader } from './features/Profile/Profile';
 import GamePage, { loader as gameLoader } from './features/Games/GamePage';
+import PopularGames, {
+    loader as popularGamesLoader,
+} from './features/Games/PopularGames';
 
 import Signup from './features/authentication/Signup';
 import Login from './features/authentication/Login';
@@ -19,9 +22,19 @@ const router = createBrowserRouter([
                 loader: homeLoader,
             },
             {
-                path: '/games/:query',
-                element: <SearchResults />,
-                loader: searchLoader,
+                path: '/games',
+                children: [
+                    {
+                        index: true,
+                        element: <PopularGames />,
+                        loader: popularGamesLoader,
+                    },
+                    {
+                        path: ':query',
+                        element: <SearchResults />,
+                        loader: searchLoader,
+                    },
+                ],
             },
             {
                 path: '/login',

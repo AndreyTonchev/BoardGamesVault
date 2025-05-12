@@ -1,18 +1,18 @@
 import { useLoaderData, useOutletContext } from 'react-router';
-import { getGameDataFromId, getGameIdsFromQuery } from '../utils/helpers';
-import GameCard from '../features/Games/GameCard';
-import { processGames } from '../utils/gamesSoring';
+import { getGameDataFromId, getPopularGames } from '../../utils/helpers';
+import GameCard from './GameCard';
+import { processGames } from '../../utils/gamesSoring';
 
-function SearchResults() {
+function PopularGames() {
     const games = useLoaderData();
-
     const { sort, filter } = useOutletContext();
+
     const sortedGames = processGames(games, sort, filter);
 
     return (
         <>
             <div className="text-2xl font-semibold text-gray-200">
-                {sortedGames.length} games matching the search
+                Popular games right now
             </div>
             <div className="m-5 grid w-[95%] grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
                 {sortedGames.map((gameData, index) => (
@@ -27,19 +27,18 @@ function SearchResults() {
     );
 }
 
-export async function loader({ params }) {
-    const searchResult = await getGameIdsFromQuery(params.query, 'search');
+export async function loader() {
+    const popularGames = await getPopularGames();
 
     try {
-        const gamePromises = searchResult.map((id) => getGameDataFromId(id));
-
+        const gamePromises = popularGames.map((id) => getGameDataFromId(id));
         const games = await Promise.all(gamePromises);
 
         return games;
     } catch (error) {
-        console.error('Error fetching games: ', error);
+        console.error('Error fetching popular games:', games);
         return [];
     }
 }
 
-export default SearchResults;
+export default PopularGames;

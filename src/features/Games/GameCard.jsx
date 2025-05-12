@@ -1,3 +1,4 @@
+import React, { memo, useCallback } from 'react';
 import {
     FaUserGroup,
     FaCalendar,
@@ -7,31 +8,25 @@ import {
 } from 'react-icons/fa6';
 import { useNavigate } from 'react-router';
 
-function GameCard({ gameData, index }) {
-    const { name, image, rating, published, minplayers, maxplayers, id } =
-        gameData;
-    const navigate = useNavigate();
+function GameIndex({ index }) {
+    return (
+        <span className="pl-3 text-2xl font-semibold text-gray-400">
+            {index}
+        </span>
+    );
+}
 
-    function navigateToGamePage() {
-        navigate(`/game/${id}`);
-    }
-
-    const renderStar = (rating, starPosition) => {
-        if (rating >= 2 * starPosition) return <FullStar />;
-        if (rating >= 2 * starPosition - 1) return <HalfStar />;
-        return <EmptyStar />;
-    };
+const GameCardContent = memo(function GameCardContent({ gameData, onClick }) {
+    const { name, image, rating, published, minplayers, maxplayers } = gameData;
 
     return (
-        <div
-            className="container m-0 flex cursor-pointer flex-row items-center gap-4 transition-all duration-500 hover:scale-105"
-            onClick={navigateToGamePage}
-        >
-            <span className="pl-3 text-2xl font-semibold text-gray-400">
-                {index}
-            </span>
+        <>
             <div className="flex aspect-square h-32 items-center justify-center">
-                <img className="max-h-[90%] rounded-xl" src={image} />
+                <img
+                    className="max-h-[90%] rounded-xl"
+                    src={image}
+                    alt={name}
+                />
             </div>
             <div className="flex h-full flex-col justify-center gap-1.5">
                 <h2 className="text-lg font-semibold">{name}</h2>
@@ -58,6 +53,30 @@ function GameCard({ gameData, index }) {
                     {Math.round(rating * 10) / 10}/10
                 </span>
             </div>
+        </>
+    );
+});
+
+const renderStar = (rating, starPosition) => {
+    if (rating >= 2 * starPosition) return <FullStar />;
+    if (rating >= 2 * starPosition - 1) return <HalfStar />;
+    return <EmptyStar />;
+};
+
+function GameCard({ gameData, index }) {
+    const navigate = useNavigate();
+
+    const navigateToGamePage = useCallback(() => {
+        navigate(`/game/${gameData.id}`);
+    }, [gameData.id]);
+
+    return (
+        <div
+            className="container m-0 flex cursor-pointer flex-row items-center gap-4 transition-all duration-500 hover:scale-105"
+            onClick={navigateToGamePage}
+        >
+            <GameIndex index={index} />
+            <GameCardContent gameData={gameData} />
         </div>
     );
 }

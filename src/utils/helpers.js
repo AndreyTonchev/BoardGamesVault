@@ -1,9 +1,15 @@
 const API = 'https://boardgamegeek.com/xmlapi2';
 
-export async function getGameIdsFromQuery(searchQuery) {
-    const res = await fetch(
-        `${API}/search?query=${searchQuery}&exact=1&type=boardgame`,
-    );
+export function getGameIdsFromQuery(query) {
+    return fetchIds(`${API}/search?query=${query}&exact=1&type=boardgame`);
+}
+
+export function getPopularGames() {
+    return fetchIds(`${API}/hot?type=boardgame`);
+}
+
+async function fetchIds(URL) {
+    const res = await fetch(URL);
 
     if (!res.ok) {
         throw new Error(`API Error: ${res.status} ${res.statusText}`);
@@ -47,6 +53,7 @@ export async function getGameDataFromId(gameId) {
 
     const gameData = {
         id: gameId,
+        type: safeGetElement('item', 'type') || 'Unknown',
         name: safeGetElement('name[type="primary"]', 'value') || 'Unknown',
         description: safeGetElement('description', 'textContent') || '',
         published: safeGetElement('yearpublished', 'value') || 'Unknown',
