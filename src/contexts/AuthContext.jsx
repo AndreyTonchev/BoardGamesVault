@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import supabase from '../services/supabase';
 
 const AuthContext = createContext();
-const initiialState = {};
+const initiialState = null;
 
 function AuthProvider({ children }) {
     const [user, setUser] = useState(initiialState);
@@ -111,14 +111,35 @@ function AuthProvider({ children }) {
     const logOut = async () => {
         try {
             setLoading(true);
+
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
+            if (!session) {
+                console.log(
+                    'No active session found, cleaning up local state only',
+                );
+                setUser(null);
+                return { error: null };
+            }
+
+            console.log('Active session found, signing out');
             const { error } = await supabase.auth.signOut();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Logout error:', error);
+
+                setUser(null);
+                throw error;
+            }
 
             setUser(null);
             return { error: null };
         } catch (error) {
             console.error('Error signing out:', error);
+
+            setUser(null);
             return { error };
         } finally {
             setLoading(false);
@@ -131,7 +152,6 @@ function AuthProvider({ children }) {
         logIn,
         signUp,
         logOut,
-        loading,
     };
 
     return (
