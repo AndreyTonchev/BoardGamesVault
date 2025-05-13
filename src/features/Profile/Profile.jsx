@@ -11,9 +11,43 @@ import Review from '../Games/Review';
 
 function Profile() {
     const data = useLoaderData();
+
+    const [isFollowed, setIsFollowed] = useState(data.isFollowed);
+    const [loading, setLoading] = useState(false);
     const [editToggle, setEditToggle] = useState(false);
     const [selectedCollection, setSelectedCollection] = useState('owned');
     console.log(data.collections);
+
+    async function handleFollow() {
+        setLoading(true);
+        try {
+            if (isFollowed === false) {
+                const { error } = await supabase.from('user_follows').insert([
+                    {
+                        followed_id: data.profile.id,
+                        follower_id: data.user.id,
+                    },
+                ]);
+
+                if (error) throw error;
+                setIsFollowed(true);
+            } else {
+                const { error } = await supabase
+                    .from('user_follows')
+                    .delete()
+                    .eq('followed_id', data.profile.id)
+                    .eq('follower_id', data.user.id);
+
+                if (error) throw error;
+                setIsFollowed(false);
+            }
+        } catch (error) {
+            throw new Error('Error following user:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="w-[95%] text-neutral-200">
             <section className="container flex flex-col gap-6 p-6">
@@ -36,11 +70,19 @@ function Profile() {
                         </div>
                     </div>
                     {data.user.id === data.profile.id ? (
-                        <Button onClick={() => setEditToggle(!editToggle)}>
+                        <Button
+                            onClick={() => setEditToggle(!editToggle)}
+                            disabled={loading}
+                        >
                             Edit Profile
                         </Button>
                     ) : (
-                        <Button>Add Friend</Button>
+                        <Button
+                            onClick={() => handleFollow()}
+                            disabled={loading}
+                        >
+                            {isFollowed ? 'Followed' : 'Follow user'}
+                        </Button>
                     )}
                 </header>
                 {<span>{data.profile.bio}</span>}
@@ -100,11 +142,9 @@ function Profile() {
                 </div>
             </section>
             {selectedCollection === 'reviews' ? (
-                <div className="container flex w-[95%] flex-col gap-5 p-10">
-                    {data.reviews.map((review) => (
-                        <Review data={review} external={true} />
-                    ))}
-                </div>
+                data.reviews.map((review, index) => (
+                    <Review data={review} external={true} key={index} />
+                ))
             ) : (
                 <GameList
                     data={data.collections[selectedCollection]}
@@ -150,6 +190,17 @@ export async function loader({ params }) {
 
         if (reviewsError) throw reviewsError;
 
+        const { data: followedData, error: followedError } = await supabase
+            .from('user_follows')
+            .select('*')
+            .eq('follower_id', session.user.id)
+            .eq('followed_id', params.userId)
+            .maybeSingle();
+
+        if (followedError && followedError.code !== 'PGRST116')
+            throw followedError;
+        const isFollowed = !!followedData;
+
         console.log(reviewsData);
 
         const ownedGames =
@@ -192,6 +243,7 @@ export async function loader({ params }) {
             profile: profileData,
             collections,
             reviews: reviewsData,
+            isFollowed,
         };
     } catch (error) {
         console.error('Error in loader: ', error);

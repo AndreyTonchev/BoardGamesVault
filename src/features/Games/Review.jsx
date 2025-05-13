@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import StarRating from './StarRating';
 import { formatDate } from '../../utils/helpers';
 
-function Review({ data, external = false }) {
+function Review({ data, external = false, onProfile = false }) {
     const {
         content,
         rating,
@@ -18,11 +18,42 @@ function Review({ data, external = false }) {
         navigate(`/profile/${user_id}`);
     }
 
-    return (
+    return external ? (
         <div
-            onClick={external ? () => navigate(`/game/${bgg_id}`) : null}
-            className="flex flex-col justify-start gap-2 rounded-xl border-1 border-neutral-500 bg-neutral-700 p-4 text-neutral-200"
+            onClick={() => navigate(`/game/${bgg_id}`)}
+            className="container flex cursor-pointer flex-row items-center gap-4 p-6"
         >
+            <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-baseline gap-2">
+                    <h3
+                        className="cursor-pointer text-lg font-semibold"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleClick();
+                        }}
+                    >
+                        {onProfile ? (
+                            ''
+                        ) : (
+                            <>
+                                <span className="text-blue-200">
+                                    {display_name}
+                                </span>
+                            </>
+                        )}
+                        <span className="text-md"> on </span>
+                        <span className="text-blue-200">{game_name}</span>
+                    </h3>
+                    <span className="text-sm text-neutral-400">
+                        {formatDate(created_at)}
+                    </span>
+                </div>
+                <StarRating rating={rating} readOnly={true} />
+                <p>{content}</p>
+            </div>
+        </div>
+    ) : (
+        <div className="flex flex-col justify-start gap-2 rounded-xl border-1 border-neutral-500 bg-neutral-700 p-4 text-neutral-200">
             <div className="flex flex-row items-baseline gap-2">
                 <h3
                     className="cursor-pointer text-lg font-semibold"
@@ -36,9 +67,6 @@ function Review({ data, external = false }) {
             </div>
             <StarRating rating={rating} readOnly={true} />
             <p>{content}</p>
-            {external && (
-                <span className="text-amber-200 italic">For {game_name}</span>
-            )}
         </div>
     );
 }
