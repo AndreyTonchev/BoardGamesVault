@@ -76,3 +76,18 @@ export function formatDate(dateString) {
 
     return `${day}/${month}/${year}`;
 }
+
+export function decodeHtmlEntities(text) {
+    if (!text || typeof text !== 'string') {
+        return '';
+    }
+
+    return text
+        .replace(/&#10;/g, '\n')
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&nbsp;/g, ' ');
+}

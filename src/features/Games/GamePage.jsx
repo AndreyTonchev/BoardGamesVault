@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router';
-import { getGameDataFromId } from '../../utils/helpers';
+import { getGameDataFromId, decodeHtmlEntities } from '../../utils/helpers';
 import Button from '../../ui/Button';
 
 import {
@@ -232,8 +232,8 @@ function GamePage() {
                         <span className="text-2xl font-semibold">
                             Description:
                         </span>
-                        <p className="text-md text-neutral-500">
-                            {description}
+                        <p className="text-md whitespace-pre-line text-neutral-500">
+                            {decodeHtmlEntities(description)}
                         </p>
                     </div>
                 </div>

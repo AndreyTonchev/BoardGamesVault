@@ -143,7 +143,12 @@ function Profile() {
             </section>
             {selectedCollection === 'reviews' ? (
                 data.reviews.map((review, index) => (
-                    <Review data={review} external={true} key={index} />
+                    <Review
+                        data={review}
+                        external={true}
+                        key={index}
+                        onProfile={true}
+                    />
                 ))
             ) : (
                 <GameList

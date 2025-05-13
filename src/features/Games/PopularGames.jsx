@@ -1,6 +1,6 @@
 import { useLoaderData, useOutletContext } from 'react-router';
 import { getGameDataFromId, getPopularGames } from '../../utils/helpers';
-import GameCard from './GameCard';
+
 import { processGames } from '../../utils/gamesSoring';
 import GameList from './GameList';
 

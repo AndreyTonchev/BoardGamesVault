@@ -19,30 +19,32 @@ function Review({ data, external = false, onProfile = false }) {
     }
 
     return external ? (
-        <div
-            onClick={() => navigate(`/game/${bgg_id}`)}
-            className="container flex cursor-pointer flex-row items-center gap-4 p-6"
-        >
+        <div className="container flex flex-row items-center gap-4 p-6">
             <div className="flex flex-col gap-1">
                 <div className="flex flex-row items-baseline gap-2">
-                    <h3
-                        className="cursor-pointer text-lg font-semibold"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleClick();
-                        }}
-                    >
+                    <h3 className="text-lg font-semibold">
                         {onProfile ? (
                             ''
                         ) : (
                             <>
-                                <span className="text-blue-200">
+                                <span
+                                    className="cursor-pointer hover:text-blue-200"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleClick();
+                                    }}
+                                >
                                     {display_name}
                                 </span>
+                                <span className="text-md"> on </span>
                             </>
                         )}
-                        <span className="text-md"> on </span>
-                        <span className="text-blue-200">{game_name}</span>
+                        <span
+                            className="cursor-pointer hover:text-blue-200"
+                            onClick={() => navigate(`/game/${bgg_id}`)}
+                        >
+                            {game_name}
+                        </span>
                     </h3>
                     <span className="text-sm text-neutral-400">
                         {formatDate(created_at)}
@@ -56,7 +58,7 @@ function Review({ data, external = false, onProfile = false }) {
         <div className="flex flex-col justify-start gap-2 rounded-xl border-1 border-neutral-500 bg-neutral-700 p-4 text-neutral-200">
             <div className="flex flex-row items-baseline gap-2">
                 <h3
-                    className="cursor-pointer text-lg font-semibold"
+                    className="cursor-pointer text-lg font-semibold hover:text-blue-200"
                     onClick={handleClick}
                 >
                     {display_name}
