@@ -19,6 +19,7 @@ import supabase from '../../services/supabase';
 import { useState } from 'react';
 import StarRating from './StarRating';
 import Review from './Review';
+import InputField from '../../ui/InputField';
 
 function GamePage() {
     const { gameData, userCollections, gameReviews } = useLoaderData();
@@ -96,6 +97,7 @@ function GamePage() {
             display_name: user.user_metadata.display_name,
             rating: reviewRating,
             content: review,
+            game_name: name,
         });
 
         try {
@@ -108,6 +110,7 @@ function GamePage() {
                         display_name: user.user_metadata.display_name,
                         rating: reviewRating,
                         content: review,
+                        game_name: name,
                     },
                 ])
                 .select();
@@ -119,8 +122,9 @@ function GamePage() {
                 content: data[0].content,
                 rating: data[0].rating,
                 date: data[0].created_at,
-                display_name: data[0].user_name,
+                display_name: data[0].display_name,
                 user_id: data[0].user_id,
+                game_name: data[0].game_name,
             };
 
             setReviews([...reviews, newReview]);
@@ -250,14 +254,16 @@ function GamePage() {
                             rating={reviewRating}
                             onSetRating={setReviewRating}
                         />
-                        <label className="font-semibold">Write a Review</label>
-                        <textarea
-                            value={review}
+                        <InputField
                             placeholder="Share your thoughts about the game..."
+                            value={review}
                             onChange={(e) => setReview(e.target.value)}
-                            className="rounded-lg border-1 border-neutral-500 bg-neutral-800 px-3 py-2"
-                            rows={4}
-                        />
+                            moreContent={true}
+                            bgColor="bg-neutral-800"
+                        >
+                            Write a Review
+                        </InputField>
+
                         <Button disabled={loading}>Post Review</Button>
                     </form>
                 )}
@@ -297,9 +303,10 @@ export async function loader({ params }) {
                 id: item.id,
                 content: item.content,
                 rating: item.rating,
-                date: item.created_at,
+                created_at: item.created_at,
                 display_name: item.display_name,
                 user_id: item.user_id,
+                game_name: item.game_name,
             });
         });
 

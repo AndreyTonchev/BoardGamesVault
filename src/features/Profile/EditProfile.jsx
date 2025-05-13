@@ -33,7 +33,7 @@ function EditProfile({ profile, toggle }) {
             setNewAvatarUrl('');
             setNewBio('');
             toggle(false);
-            // navigate(0);
+            navigate(0);
         } catch (error) {
             console.error('Error Updating user:', error);
         } finally {

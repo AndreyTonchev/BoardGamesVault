@@ -7,6 +7,7 @@ import InputField from '../../ui/InputField';
 import EditProfile from './EditProfile';
 import GameList from '../Games/GameList';
 import { getGameDataFromId } from '../../utils/helpers';
+import Review from '../Games/Review';
 
 function Profile() {
     const data = useLoaderData();
@@ -64,36 +65,51 @@ function Profile() {
             <section className="container flex flex-col gap-6 p-6">
                 <div className="flex flex-row justify-between">
                     <h2 className="text-2xl font-semibold">My Collection</h2>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row">
                         <button
-                            className="cursor-pointer"
+                            className={`cursor-pointer rounded-2xl px-3 py-2 ${selectedCollection === 'owned' ? 'bg-neutral-700' : ''}`}
                             onClick={() => setSelectedCollection('owned')}
                         >
                             Owned
                         </button>
                         <button
-                            className="cursor-pointer"
+                            className={`cursor-pointer rounded-2xl px-3 py-2 ${selectedCollection === 'played' ? 'bg-neutral-700' : ''}`}
                             onClick={() => setSelectedCollection('played')}
                         >
                             Played
                         </button>
                         <button
-                            className="cursor-pointer"
+                            className={`cursor-pointer rounded-2xl px-3 py-2 ${selectedCollection === 'liked' ? 'bg-neutral-700' : ''}`}
                             onClick={() => setSelectedCollection('liked')}
                         >
                             Liked
                         </button>
                         <button
-                            className="cursor-pointer"
+                            className={`cursor-pointer rounded-2xl px-3 py-2 ${selectedCollection === 'wishlist' ? 'bg-neutral-700' : ''}`}
                             onClick={() => setSelectedCollection('wishlist')}
                         >
                             Wishlist
                         </button>
+                        <button
+                            className={`cursor-pointer rounded-2xl px-3 py-2 ${selectedCollection === 'reviews' ? 'bg-neutral-700' : ''}`}
+                            onClick={() => setSelectedCollection('reviews')}
+                        >
+                            Reviews
+                        </button>
                     </div>
                 </div>
             </section>
-
-            <GameList data={data.collections[selectedCollection]}></GameList>
+            {selectedCollection === 'reviews' ? (
+                <div className="container flex w-[95%] flex-col gap-5 p-10">
+                    {data.reviews.map((review) => (
+                        <Review data={review} external={true} />
+                    ))}
+                </div>
+            ) : (
+                <GameList
+                    data={data.collections[selectedCollection]}
+                ></GameList>
+            )}
         </div>
     );
 }
@@ -127,6 +143,15 @@ export async function loader({ params }) {
 
         if (gamesError) throw gamesError;
 
+        const { data: reviewsData, error: reviewsError } = await supabase
+            .from('user_content')
+            .select('*')
+            .eq('user_id', params.userId);
+
+        if (reviewsError) throw reviewsError;
+
+        console.log(reviewsData);
+
         const ownedGames =
             gamesData.filter((game) => game.status === 'owned') || [];
         const playedGames =
@@ -159,11 +184,14 @@ export async function loader({ params }) {
             liked,
         };
 
+        console.log(reviewsData);
+
         return {
             session,
             user: session.user,
             profile: profileData,
             collections,
+            reviews: reviewsData,
         };
     } catch (error) {
         console.error('Error in loader: ', error);

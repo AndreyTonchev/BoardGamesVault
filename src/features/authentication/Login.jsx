@@ -52,6 +52,7 @@ function Login() {
                     <div className="flex flex-col gap-3">
                         <InputField
                             placeholder="Username"
+                            type="email"
                             required={true}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
