@@ -1,4 +1,4 @@
-# Board Games Vault# Board Games Vault: A Letterboxd-Inspired Platform for Board Game Enthusiasts
+## Board Games Vault: A Letterboxd-Inspired Platform for Board Game Enthusiasts
 
 ## Project Overview
 
